@@ -27,7 +27,7 @@ jobs:
           password: ${{ secrets.REGISTRY_PASSWORD }}
       - run: |
           IMAGE_TAG=${{ github.sha }} docker-compose build
-          docker-compose push
+          IMAGE_TAG=${{ github.sha }} docker-compose push
 
 #      - name: Deploy to Azure Web App
 #        uses: azure/webapps-deploy@v2
