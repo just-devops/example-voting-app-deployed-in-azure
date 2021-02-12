@@ -30,7 +30,7 @@ jobs:
 
       - uses: azure/webapps-deploy@v2
         with:
-          app-name: pegasuscontainerizedapp
+          app-name: ${{ env.AZURE_APP_SERVICE_NAME }}
           images: |
             registryvotingappgnr5x6b3.azurecr.io/worker:${{ github.sha }}
             registryvotingappgnr5x6b3.azurecr.io/result:${{ github.sha }}
