@@ -5,7 +5,7 @@
 services:
   vote:
     build: ./vote
-    image: registryvotingappgnr5x6b3.azurecr.io/vote
+    image: registryvotingappgnr5x6b3.azurecr.io/vote:${sha}
     # use python rather than gunicorn for local dev
     command: python app.py
     depends_on:
@@ -21,7 +21,7 @@ services:
 
   result:
     build: ./result
-    image: registryvotingappgnr5x6b3.azurecr.io/result
+    image: registryvotingappgnr5x6b3.azurecr.io/result:${sha}
 
     # use nodemon rather than node for local dev
     command: nodemon server.js
@@ -40,7 +40,7 @@ services:
   worker:
     build:
       context: ./worker
-    image: registryvotingappgnr5x6b3.azurecr.io/worker
+    image: registryvotingappgnr5x6b3.azurecr.io/worker:${sha}
 
     depends_on:
       redis:
