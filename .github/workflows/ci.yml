@@ -5,7 +5,6 @@ name: Build and deploy using docker compose to Azure web application
 
 env:
   AZURE_APP_SERVICE_NAME: votingappgnr5x6b3
-  AZURE_CONTAINER_REGISTRY: registryvotingappgnr5x6b3.azurecr.io
   IMAGE_TAG: ${{ github.sha }}
 
 jobs:
@@ -21,10 +20,10 @@ jobs:
 
       - name: Azure container registry authentication
         uses: azure/docker-login@v1
-          with:
-            login-server: ${{ secrets.REGISTRY_LOGIN_SERVER }}
-            username: ${{ secrets.REGISTRY_USERNAME }}
-            password: ${{ secrets.REGISTRY_PASSWORD }}
+        with:
+          login-server: ${{ secrets.REGISTRY_LOGIN_SERVER }}
+          username: ${{ secrets.REGISTRY_USERNAME }}
+          password: ${{ secrets.REGISTRY_PASSWORD }}
       - run: |
           IMAGE_TAG=${{ env.IMAGE_TAG }} docker-compose build
           IMAGE_TAG=${{ env.IMAGE_TAG }} docker-compose push
