@@ -25,20 +25,14 @@ jobs:
           login-server: ${{ env.AZURE_CONTAINER_REGISTRY }}
           username: ${{ secrets.REGISTRY_USERNAME }}
           password: ${{ secrets.REGISTRY_PASSWORD }}
-      - run: |
-          IMAGE_TAG=${{ env.IMAGE_TAG }} docker-compose build
-          IMAGE_TAG=${{ env.IMAGE_TAG }} docker-compose push
 
       - uses: azure/webapps-deploy@v2
         with:
           app-name: ${{ env.AZURE_APP_SERVICE_NAME }}
           images: |
-            registryvotingappgnr5x6b3.azurecr.io/worker:${{ env.IMAGE_TAG }}
-            registryvotingappgnr5x6b3.azurecr.io/result:${{ env.IMAGE_TAG }}
-            registryvotingappgnr5x6b3.azurecr.io/vote:${{ env.IMAGE_TAG }}
-            postgres:9.4
-            redis:5.0-alpine3.10
-          configuration-file: ./docker-compose.yml
+            wordpress:latest
+            mysql:5.7
+          configuration-file: ./docker-compose-wordpress.yml
 
       - name: Azure logout
         run: |
