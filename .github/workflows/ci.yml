@@ -6,6 +6,7 @@ name: Build and deploy using docker compose to Azure web application
 env:
   AZURE_APP_SERVICE_NAME: votingappgnr5x6b3
   AZURE_CONTAINER_REGISTRY: registryvotingappgnr5x6b3.azurecr.io
+  IMAGE_TAG: latest
 
 jobs:
   build-and-deploy:
@@ -25,16 +26,16 @@ jobs:
           username: ${{ secrets.REGISTRY_USERNAME }}
           password: ${{ secrets.REGISTRY_PASSWORD }}
       - run: |
-          IMAGE_TAG=${{ github.sha }} docker-compose build
-          IMAGE_TAG=${{ github.sha }} docker-compose push
+          IMAGE_TAG=${{ env.IMAGE_TAG }} docker-compose build
+          IMAGE_TAG=${{ env.IMAGE_TAG }} docker-compose push
 
       - uses: azure/webapps-deploy@v2
         with:
           app-name: ${{ env.AZURE_APP_SERVICE_NAME }}
           images: |
-            registryvotingappgnr5x6b3.azurecr.io/worker:${{ github.sha }}
-            registryvotingappgnr5x6b3.azurecr.io/result:${{ github.sha }}
-            registryvotingappgnr5x6b3.azurecr.io/vote:${{ github.sha }}
+            registryvotingappgnr5x6b3.azurecr.io/worker:${{ env.IMAGE_TAG }}
+            registryvotingappgnr5x6b3.azurecr.io/result:${{ env.IMAGE_TAG }}
+            registryvotingappgnr5x6b3.azurecr.io/vote:${{ env.IMAGE_TAG }}
             postgres:9.4
             redis:5.0-alpine3.10
           configuration-file: ./docker-compose.yml
