@@ -67,7 +67,7 @@ services:
       POSTGRES_USER: "postgres"
       POSTGRES_PASSWORD: "postgres"
     volumes:
-      - "${WEBAPP_STORAGE_HOME}/db-data:/var/lib/postgresql/data"
+      - "db-data:/var/lib/postgresql/data"
       - "${WEBAPP_STORAGE_HOME}/healthchecks:/healthchecks"
     healthcheck:
       test: /healthchecks/postgres.sh
