@@ -6,7 +6,7 @@ name: Build and deploy using docker compose to Azure web application
 env:
   AZURE_APP_SERVICE_NAME: votingappgnr5x6b3
   AZURE_CONTAINER_REGISTRY: registryvotingappgnr5x6b3.azurecr.io
-  IMAGE_TAG: latest
+  IMAGE_TAG: ${{ github.sha }}
 
 jobs:
   build-and-deploy:
@@ -21,21 +21,44 @@ jobs:
 
       - name: Azure container registry authentication
         uses: azure/docker-login@v1
-        with:
-          login-server: ${{ env.AZURE_CONTAINER_REGISTRY }}
-          username: ${{ secrets.REGISTRY_USERNAME }}
-          password: ${{ secrets.REGISTRY_PASSWORD }}
+          with:
+            login-server: ${{ secrets.REGISTRY_LOGIN_SERVER }}
+            username: ${{ secrets.REGISTRY_USERNAME }}
+            password: ${{ secrets.REGISTRY_PASSWORD }}
       - run: |
           IMAGE_TAG=${{ env.IMAGE_TAG }} docker-compose build
           IMAGE_TAG=${{ env.IMAGE_TAG }} docker-compose push
+
+      - name: Private ACR authentication
+        uses: Azure/appservice-settings@v1
+        with:
+          app-name: ${{ env.AZURE_APP_SERVICE_NAME }}
+          app-settings-json: |
+            [
+                {
+                    "name": "DOCKER_REGISTRY_SERVER_PASSWORD",
+                    "value": "${{ secrets.REGISTRY_PASSWORD }}",
+                    "slotSetting": false
+                },
+                {
+                    "name": "DOCKER_REGISTRY_SERVER_URL",
+                    "value": "${{ secrets.REGISTRY_LOGIN_SERVER }}",
+                    "slotSetting": false
+                },
+                {
+                    "name": "DOCKER_REGISTRY_SERVER_USERNAME",
+                    "value": "${{ secrets.REGISTRY_USERNAME  }}",
+                    "slotSetting": false
+                }
+            ]
 
       - uses: azure/webapps-deploy@v2
         with:
           app-name: ${{ env.AZURE_APP_SERVICE_NAME }}
           images: |
-            registryvotingappgnr5x6b3.azurecr.io/worker
-            registryvotingappgnr5x6b3.azurecr.io/result
-            registryvotingappgnr5x6b3.azurecr.io/vote
+            ${{ secrets.REGISTRY_LOGIN_SERVER }}/worker:${{ env.IMAGE_TAG }}
+            ${{ secrets.REGISTRY_LOGIN_SERVER }}/result:${{ env.IMAGE_TAG }}
+            ${{ secrets.REGISTRY_LOGIN_SERVER }}/vote:${{ env.IMAGE_TAG }}
             postgres:9.4
             redis:5.0-alpine3.10
           configuration-file: ./docker-compose.yml
