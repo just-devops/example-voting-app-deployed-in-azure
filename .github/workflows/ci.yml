@@ -6,7 +6,7 @@ name: Build and deploy using docker compose to Azure web application
 env:
   AZURE_APP_SERVICE_NAME: votingappgnr5x6b3
   AZURE_CONTAINER_REGISTRY: registryvotingappgnr5x6b3.azurecr.io
-  IMAGE_TAG: latest
+  IMAGE_TAG: ${{ github.sha }}
 
 jobs:
   build-and-deploy:
